@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What This CO2 Model Can Say, and What It Cannot</title>
+  <meta name="description" content="A cautious policy-analysis brief on country-level CO2 emissions modeling: what the notebook measures, where inference must stop, and how regulation can use the output without pretending it is causal.">
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&amp;family=Work+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --bg: #ffffff;
+      --ink: #111111;
+      --ink-2: #1a1a1a;
+      --text: #333333;
+      --muted: #555555;
+      --soft: #888888;
+      --rule: #ddd;
+      --divider: #e8e8e8;
+      --panel: #f0f0f0;
+      --inverse: #f5f5f5;
+      --serif: "Spectral", Georgia, serif;
+      --sans: "Work Sans", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.72;
+    }
+
+    code {
+      font-family: var(--mono);
+      background: var(--panel);
+      padding: 0.08em 0.3em;
+      font-size: 0.9em;
+    }
+
+    .sheet {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 1rem 1rem 5rem;
+    }
+
+    .header {
+      border-top: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+      padding: 1rem 0 1.4rem;
+    }
+
+    .header-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .eyebrow,
+    .meta {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: 0.67rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--soft);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) 310px;
+      gap: 2rem;
+      align-items: end;
+      padding-top: 1.1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(2.9rem, 5.7vw, 5.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      font-weight: 700;
+      max-width: 10ch;
+    }
+
+    .deck {
+      margin: 1rem 0 0;
+      max-width: 48rem;
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.68;
+    }
+
+    .brief-box {
+      border: 1px solid var(--ink);
+      padding: 1rem 1rem 1.05rem;
+      background: var(--panel);
+    }
+
+    .brief-box h2 {
+      margin: 0 0 0.8rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--soft);
+      font-weight: 500;
+    }
+
+    .brief-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--ink);
+      margin-bottom: 0.8rem;
+    }
+
+    .brief-grid div {
+      background: var(--bg);
+      padding: 0.8rem 0.85rem;
+      min-height: 86px;
+    }
+
+    .brief-grid span {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--soft);
+      margin-bottom: 0.35rem;
+    }
+
+    .brief-grid strong {
+      display: block;
+      font-size: 1.1rem;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    .brief-box p {
+      margin: 0;
+      font-size: 0.89rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .body {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 2rem;
+      margin-top: 2rem;
+      align-items: start;
+    }
+
+    .rail {
+      position: sticky;
+      top: 1rem;
+    }
+
+    .rail-card {
+      border-left: 2px solid var(--ink);
+      padding-left: 0.9rem;
+    }
+
+    .rail-card h3 {
+      margin: 0 0 0.7rem;
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--soft);
+      font-weight: 500;
+    }
+
+    .rail-card p {
+      margin: 0 0 0.8rem;
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .rail-card p:last-child { margin-bottom: 0; }
+
+    .prose {
+      max-width: 780px;
+    }
+
+    p {
+      margin: 0 0 1.1rem;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .section {
+      margin-top: 3rem;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.9rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .section-tag {
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--inverse);
+      background: var(--ink);
+      padding: 0.32rem 0.7rem;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: clamp(1.25rem, 2vw, 1.75rem);
+      line-height: 1.18;
+      font-weight: 700;
+      color: var(--ink);
+      max-width: 22ch;
+    }
+
+    h3 {
+      margin: 1.5rem 0 0.45rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .caution,
+    .finding {
+      margin: 1.6rem 0;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--ink);
+      background: var(--panel);
+    }
+
+    .caution span,
+    .finding span {
+      display: block;
+      margin-bottom: 0.45rem;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--soft);
+    }
+
+    .caution p,
+    .finding p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .figure-block {
+      max-width: 1100px;
+      margin: 2.3rem auto;
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--ink);
+    }
+
+    .figure-label {
+      margin: 0 0 0.7rem;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--soft);
+    }
+
+    figure {
+      margin: 0;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: var(--bg);
+    }
+
+    figcaption {
+      margin-top: 0.8rem;
+      max-width: 860px;
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .scenario-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.3rem 0 1.7rem;
+      font-size: 0.88rem;
+    }
+
+    .scenario-table th,
+    .scenario-table td {
+      text-align: left;
+      padding: 0.72rem 0.75rem;
+      border-bottom: 1px solid var(--divider);
+      vertical-align: top;
+    }
+
+    .scenario-table th {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      border-bottom: 2px solid var(--ink);
+      font-weight: 500;
+    }
+
+    .scenario-table td {
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .scenario-table td strong { color: var(--ink); }
+
+    pre {
+      margin: 1.25rem 0 1.5rem;
+      background: #111111;
+      color: #f5f5f5;
+      padding: 1rem 1.15rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.81rem;
+      line-height: 1.67;
+    }
+
+    ul, ol {
+      margin: 0 0 1.1rem;
+      padding-left: 1.25rem;
+      color: var(--text);
+    }
+
+    li {
+      margin-bottom: 0.42rem;
+      font-size: 0.98rem;
+    }
+
+    .closing {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--ink);
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .body {
+        grid-template-columns: 1fr;
+      }
+
+      .rail {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .sheet { padding-left: 0.85rem; padding-right: 0.85rem; }
+      .header-row { grid-template-columns: 1fr; }
+      .brief-grid { grid-template-columns: 1fr; }
+      .scenario-table th, .scenario-table td { padding-left: 0.45rem; padding-right: 0.45rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <header class="header">
+      <div class="header-row">
+        <p class="eyebrow">Policy Analysis / Country Emissions / Prediction With Guardrails</p>
+        <p class="meta">Notebook evidence: 2014 ranking view, 2007 merged panel, regression plus Lasso</p>
+      </div>
+      <div class="hero">
+        <div>
+          <h1>What This CO2 Model Can Say, and What It Cannot</h1>
+          <p class="deck">A country-level regression can help a policy team organize its questions. It cannot, by itself, prove which lever caused emissions to rise or fall, and it becomes dangerous the moment a prediction is mistaken for a causal verdict.</p>
+        </div>
+        <aside class="brief-box">
+          <h2>Brief Summary</h2>
+          <div class="brief-grid">
+            <div>
+              <span>Target</span>
+              <strong>CO2 per person</strong>
+            </div>
+            <div>
+              <span>Panel size</span>
+              <strong>56 rows before dropna</strong>
+            </div>
+            <div>
+              <span>Best reported test fit</span>
+              <strong>`R2 0.8634`</strong>
+            </div>
+            <div>
+              <span>Model family</span>
+              <strong>Linear + Lasso</strong>
+            </div>
+          </div>
+          <p>The notebook is strongest as a structured correlation exercise. It is weakest where policy readers are most likely to overclaim: causation, country blame, and implied prescriptions.</p>
+        </aside>
+      </div>
+    </header>
+
+    <section class="body">
+      <aside class="rail">
+        <div class="rail-card">
+          <h3>Reading Rule</h3>
+          <p>`Measured`: what the notebook directly loads, merges, and scores.</p>
+          <p>`Inferred`: what a careful reader can conclude about relative association.</p>
+          <p>`Not justified`: policy claims that require causal evidence the notebook does not supply.</p>
+        </div>
+      </aside>
+
+      <article class="prose">
+        <p>The notebook begins with a useful instinct. It warns against reading total emissions rankings as moral rankings. China, the United States, and India dominate total CO2 counts partly because they are large countries. The notebook’s own corrective move is to say: if the policy question is responsibility per person, or the structure of emissions relative to development and energy use, then per-capita CO2 is the more defensible target.</p>
+        <p>That is exactly the right starting point for a policy brief. It takes the reader out of the easy politics of raw totals and into the harder task of variable definition. The problem is that the current page does not respect its own opening discipline. It drifts too quickly from “this model predicts emissions” to “this can be used to create regulatory policy,” as if the jump from regression to regulation were automatic. It is not.</p>
+        <p>The notebook gives us a country-level merged panel of development, energy, transport, and land-use variables. For the broader assembled dataset in year `2007`, it reports a frame of `56` rows and `11` columns after dropping the `geo` identifier from the display slice. Six missing values appear in the vehicle-density variable, and rows with missing data are then dropped. After that cleanup, the model uses per-capita CO2 as the target and keeps explanatory variables such as income per person, industry share of GDP, hydro generation per person, electricity generation per person, vehicle density, coal consumption per capita, electricity use per person, forest coverage, total yearly emissions, and oil consumption per capita.</p>
+        <p>That is enough material to support a cautious analysis brief. It is not enough to support a causal policy manifesto.</p>
+
+        <div class="caution">
+          <span>Policy Caution</span>
+          <p>This notebook estimates association across countries. It does not identify what would happen if any one country changed one variable while everything else stayed fixed, because that counterfactual design is not present here.</p>
+        </div>
+
+        <section class="section">
+          <div class="section-head">
+            <span class="section-tag">Measured</span>
+            <h2>The notebook’s first real contribution is definitional: it separates total emissions from per-capita emissions before doing any modeling.</h2>
+          </div>
+          <p>For year `2014`, the notebook first loads total CO2 emissions in thousand tonnes, trims the frame to `192` country rows with two columns, and computes a median total-emissions value of `11,300.0`. It then plots countries above that median. That is a ranking picture, not yet a policy model. The next step is more meaningful: it loads per-capita CO2 emissions, computes a median per-capita value of `2.265`, and plots countries above that threshold instead.</p>
+          <p>That sequence matters because it changes the question being asked. Total emissions are useful for aggregate climate burden and negotiation politics. Per-capita emissions are more useful when the analytic goal is cross-country comparison conditioned on population scale. If a policy reader misses that distinction, the rest of the notebook will be misread from the start.</p>
+          <p>Income and forest coverage are then merged into the simpler per-capita CO2 frame, first as scatter relationships and later as part of the broader merged dataset built by <code>read_and_merge_files</code>. The merge function itself is straightforward: walk a directory, keep only files containing the requested year and more than `50` rows, reduce each frame to `geo` plus the selected year, rename the metric column to the filename, and inner-join everything on country code. That is a practical way to assemble a country panel, and it already hints at the notebook’s real strength: harmonizing disparate indicators into one comparable policy-facing table.</p>
+
+<pre><code>def read_and_merge_files(root_folder, year="2007"):
+    dfs = []
+    for file in os.listdir(root_folder):
+        df = pd.read_csv(root_folder + file)
+        if year in df.columns and df.shape[0] &gt; 50:
+            df = df[["geo", year]]
+            df.columns = ["geo", file.split(".")[0]]
+            dfs.append(df)
+    master_df = dfs[0]
+    for next_df in dfs[1:]:
+        master_df = pd.merge(master_df, next_df, how="inner", on="geo")
+    return master_df
+</code></pre>
+
+          <p>This code is not glamorous, but it is the part policy analysts actually need. Without aligned country keys and year-consistent measures, every downstream claim becomes a storytelling exercise.</p>
+        </section>
+      </article>
+    </section>
+
+    <div class="figure-block">
+      <p class="figure-label">Figure A / Emissions web</p>
+      <figure>
+        <svg viewBox="0 0 1120 760" role="img" aria-label="Emissions web showing measured variables around a central per-capita CO2 node, with rings for measured, inferred, and outside model factors">
+          <rect x="24" y="24" width="1072" height="712" fill="#ffffff" stroke="#111111" stroke-width="1.5"></rect>
+          <text font-family="Work Sans, sans-serif" font-size="24" font-weight="700" fill="#111111">
+            <tspan x="58" y="58">The model is a web of measured country indicators around a per-capita CO2 target,</tspan>
+            <tspan x="58" dy="32">not a complete map of policy causation.</tspan>
+          </text>
+
+          <circle cx="560" cy="390" r="92" fill="#111111"></circle>
+          <text x="560" y="378" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" fill="#f5f5f5">TARGET</text>
+          <text x="560" y="404" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="20" font-weight="700" fill="#f5f5f5">CO2 per person</text>
+
+          <circle cx="560" cy="390" r="190" fill="none" stroke="#111111" stroke-width="1.2"></circle>
+          <circle cx="560" cy="390" r="285" fill="none" stroke="#555555" stroke-width="1" stroke-dasharray="5 5"></circle>
+          <circle cx="560" cy="390" r="340" fill="none" stroke="#888888" stroke-width="1" stroke-dasharray="2 6"></circle>
+
+          <text x="774" y="178" font-family="IBM Plex Mono, monospace" font-size="11" fill="#111111">MEASURED</text>
+          <text x="862" y="118" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">INFERRED ASSOCIATION</text>
+          <text x="902" y="80" font-family="IBM Plex Mono, monospace" font-size="11" fill="#888888">OUTSIDE MODEL / NOT IDENTIFIED</text>
+
+          <line x1="560" y1="298" x2="560" y2="210" stroke="#111111" stroke-width="1.2"></line>
+          <rect x="470" y="170" width="180" height="54" fill="#ffffff" stroke="#111111" stroke-width="1.2"></rect>
+          <text x="560" y="191" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="15" font-weight="600" fill="#111111">Industry share of GDP</text>
+          <text x="560" y="211" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">measured directly</text>
+
+          <line x1="638" y1="333" x2="758" y2="276" stroke="#111111" stroke-width="1.2"></line>
+          <rect x="748" y="244" width="210" height="64" fill="#ffffff" stroke="#111111" stroke-width="1.2"></rect>
+          <text x="853" y="267" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="15" font-weight="600" fill="#111111">Income per person</text>
+          <text x="853" y="289" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">measured; tiny fitted sign in notebook</text>
+
+          <line x1="650" y1="432" x2="778" y2="474" stroke="#111111" stroke-width="1.2"></line>
+          <rect x="760" y="448" width="220" height="64" fill="#ffffff" stroke="#111111" stroke-width="1.2"></rect>
+          <text x="870" y="471" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="15" font-weight="600" fill="#111111">Coal consumption per cap</text>
+          <text x="870" y="493" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">strong positive coefficient</text>
+
+          <line x1="560" y1="482" x2="560" y2="575" stroke="#111111" stroke-width="1.2"></line>
+          <rect x="455" y="575" width="210" height="64" fill="#ffffff" stroke="#111111" stroke-width="1.2"></rect>
+          <text x="560" y="598" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="15" font-weight="600" fill="#111111">Forest coverage</text>
+          <text x="560" y="620" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">negative sign, not causal proof</text>
+
+          <line x1="472" y1="433" x2="350" y2="492" stroke="#111111" stroke-width="1.2"></line>
+          <rect x="142" y="462" width="220" height="64" fill="#ffffff" stroke="#111111" stroke-width="1.2"></rect>
+          <text x="252" y="485" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="15" font-weight="600" fill="#111111">Electricity generation / use</text>
+          <text x="252" y="507" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">measured; signs split across variables</text>
+
+          <line x1="480" y1="333" x2="342" y2="266" stroke="#111111" stroke-width="1.2"></line>
+          <rect x="126" y="234" width="228" height="64" fill="#ffffff" stroke="#111111" stroke-width="1.2"></rect>
+          <text x="240" y="257" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="15" font-weight="600" fill="#111111">Vehicles per 1000 persons</text>
+          <text x="240" y="279" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">6 missing rows before dropna</text>
+
+          <line x1="560" y1="205" x2="560" y2="120" stroke="#555555" stroke-width="1" stroke-dasharray="5 5"></line>
+          <text x="560" y="106" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="14" fill="#555555">correlation structure the model can estimate</text>
+
+          <line x1="958" y1="308" x2="1028" y2="206" stroke="#888888" stroke-width="1" stroke-dasharray="2 6"></line>
+          <rect x="900" y="150" width="180" height="64" fill="#f0f0f0" stroke="#111111" stroke-width="1"></rect>
+          <text x="990" y="173" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="14" font-weight="600" fill="#111111">Regulatory institutions</text>
+          <text x="990" y="194" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">not measured in notebook</text>
+
+          <line x1="866" y1="514" x2="1010" y2="592" stroke="#888888" stroke-width="1" stroke-dasharray="2 6"></line>
+          <rect x="900" y="592" width="180" height="64" fill="#f0f0f0" stroke="#111111" stroke-width="1"></rect>
+          <text x="990" y="615" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="14" font-weight="600" fill="#111111">Fuel taxes, standards, timing</text>
+          <text x="990" y="636" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">policy levers, not identified effects</text>
+
+          <line x1="252" y1="526" x2="154" y2="618" stroke="#888888" stroke-width="1" stroke-dasharray="2 6"></line>
+          <rect x="58" y="618" width="210" height="64" fill="#f0f0f0" stroke="#111111" stroke-width="1"></rect>
+          <text x="163" y="641" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="14" font-weight="600" fill="#111111">Political feasibility</text>
+          <text x="163" y="662" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555555">outside model scope</text>
+        </svg>
+        <figcaption>The inner ring contains variables the notebook actually measures. The next ring is what a regression can describe: statistical association. The outer ring is where policy often wants to jump too quickly, into institutional design and causal claims that the notebook does not identify.</figcaption>
+      </figure>
+    </div>
+
+    <section class="body">
+      <div></div>
+      <article class="prose">
+        <section class="section">
+          <div class="section-head">
+            <span class="section-tag">Inferred</span>
+            <h2>The model fit is respectable, but “respectable” is not the same thing as “decision-ready on its own.”</h2>
+          </div>
+          <p>After dropping rows with missing values, the notebook splits the data into train and test sets and fits two model families: ordinary linear regression and Lasso with <code>alpha = 0.001</code>. The reported train and test <code>R2</code> scores are around `0.8736` and `0.8650` respectively for the linear model, and essentially the same for the chosen Lasso specification. That is strong predictive performance for a cross-country panel with a relatively small sample.</p>
+          <p>It tells us that a basket of observable country characteristics can explain a large share of variation in per-capita CO2 across the sample. It does not tell us that any given coefficient is a reliable policy lever in the intervention sense. The distinction matters. A model can be good at prediction because variables travel together across countries, not because changing one of them mechanically changes emissions by the amount implied by the coefficient.</p>
+          <p>The coefficient pattern is still useful as a screening device. Coal consumption per capita shows a strong positive fitted effect. Hydro power generation per person comes in negative. Forest coverage also carries a negative sign. Electricity generation per person is positive in the linear fit, while electricity use per person is slightly negative. Income per person is tiny and effectively zeroed out in the Lasso result. Total yearly emissions also vanish toward zero once the per-capita framing and the other predictors are in the equation.</p>
+          <p>That is a coherent predictive story: energy mix, industrial structure, and intensity measures matter more than symbolic country size variables once you move to a per-person target. If a policy unit used this notebook properly, it would use those signs to rank questions for deeper investigation, not to draft laws directly from the coefficient table.</p>
+
+          <table class="scenario-table" aria-label="Evidence and policy interpretation table">
+            <thead>
+              <tr>
+                <th>Notebook evidence</th>
+                <th>Reasonable inference</th>
+                <th>Not justified from this notebook alone</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Test `R2` near `0.865`</strong></td>
+                <td>The variable set captures a large share of cross-country variation in per-capita CO2.</td>
+                <td>That the same model is stable enough for regulatory targeting without additional validation and design work.</td>
+              </tr>
+              <tr>
+                <td><strong>Coal coefficient strongly positive</strong></td>
+                <td>Coal intensity is associated with higher per-capita emissions in this sample.</td>
+                <td>That reducing coal consumption by one unit would lower emissions by the exact coefficient amount in any country.</td>
+              </tr>
+              <tr>
+                <td><strong>Forest coverage coefficient negative</strong></td>
+                <td>Countries with more forest coverage are associated with lower per-capita emissions, holding the model structure fixed.</td>
+                <td>That expanding forest coverage is a proven substitute for energy-sector regulation at the coefficient rate shown.</td>
+              </tr>
+              <tr>
+                <td><strong>Income shrinks toward zero under Lasso</strong></td>
+                <td>Once the stronger intensity variables are included, raw development level adds little predictive information.</td>
+                <td>That richer countries no longer matter for climate policy, or that income is substantively irrelevant.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <span class="section-tag">Measured Again</span>
+            <h2>The Lasso section is useful less for sparsity theater than for showing which variables survive compression.</h2>
+          </div>
+          <p>Many notebook authors include Lasso because it looks modern. Here it serves a real purpose. By shrinking weak coefficients toward zero, the model makes the hierarchy of predictive variables easier to read. The selected <code>alpha</code> is tiny, and the grid search confirms that the score curve does not dramatically improve by using stronger regularization. In practice, that means the notebook is not discovering a radically simpler model. It is clarifying which variables are carrying actual signal and which ones are redundant once the stronger energy and structure variables are present.</p>
+          <p>The policy value of that is modest but real. If a ministry or multilateral team wanted a first-pass dashboard of country risk or emissions intensity, it would rather monitor variables that survive under light regularization than variables whose signs evaporate as soon as the model is penalized. That is a prioritization benefit, not a legislative warrant.</p>
+
+<pre><code>lm = Lasso(alpha=0.001)
+lm.fit(X_train, y_train)
+
+train_r2 = metrics.r2_score(y_train, lm.predict(X_train))
+test_r2 = metrics.r2_score(y_test, lm.predict(X_test))
+</code></pre>
+
+          <p>What I would add, if this were moving beyond notebook stage, is sensitivity checking across years. One quiet complication in the notebook is that the introductory charts use `2014`, while the merged model panel is built for `2007`. That is not fatal, but it is exactly the kind of inconsistency a policy audience should be told about plainly. If the brief is about 2014 framing and 2007 predictive relationships, the analyst owes the reader a note on why those years were split and whether the relationships hold across time.</p>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <span class="section-tag">Limits</span>
+            <h2>The main intellectual risk is prediction-versus-explanation confusion.</h2>
+          </div>
+          <p>Policy pages lose credibility when they use a predictive result as a moral ranking, a causal theory, and a regulatory recommendation all at once. This notebook comes close to that edge. It frames itself around “creating regulatory policies,” but its methods are observational and cross-sectional. That means at least four things need to be said explicitly.</p>
+          <ol>
+            <li>The model does not estimate the causal effect of regulation, because regulation itself is not modeled as an intervention variable.</li>
+            <li>The model compares countries to one another within a given year structure; it does not show how a single country’s emissions would respond over time to a policy package.</li>
+            <li>The coefficients may partly reflect omitted institutions, geography, energy history, or industrial composition that are only imperfectly captured by the included variables.</li>
+            <li>Inner-joining many country datasets produces a usable common sample, but it may exclude countries precisely where data scarcity is itself part of the policy problem.</li>
+          </ol>
+          <p>None of those caveats kill the project. They simply place it where it belongs: as an agenda-setting model rather than a dispositive one.</p>
+
+          <div class="finding">
+            <span>Best Use</span>
+            <p>Use the model to ask where per-capita emissions look unusually high given observable structure, which variables cluster with that outcome, and where deeper country-specific analysis should begin.</p>
+          </div>
+
+          <div class="caution">
+            <span>Misuse</span>
+            <p>Do not use the model to claim that a country should adopt one policy because a single coefficient happened to be large in a cross-country regression.</p>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <span class="section-tag">Recommendation</span>
+            <h2>A policy team can still get value from this notebook if it treats the output as triage, not verdict.</h2>
+          </div>
+          <p>If I were advising a climate-policy unit on how to use this work, I would separate the workflow into three stages. First, use the notebook to flag broad variable families that appear most associated with per-capita emissions: coal dependence, electricity intensity, industrial structure, and land coverage proxies. Second, select a smaller set of countries for country-specific review based on where model-predicted and observed emissions appear misaligned or politically salient. Third, move into domain analysis that the notebook does not contain: fuel taxation, grid composition, industrial regulation, transport standards, energy access, and implementation feasibility.</p>
+          <p>That sequence respects what the notebook can actually do. It also prevents a familiar policy failure mode, where a clean regression table tempts the reader to skip the hard institutional work. In climate policy, the hard institutional work is the work.</p>
+          <p>The notebook deserves credit for one other thing: it refuses to stop at a single descriptive chart. It tries to join development, energy, and land-use proxies into one cross-country frame and test whether the signal survives train-test separation. That is better than slogan-level analysis. It just needs a stronger editorial fence around its claims.</p>
+        </section>
+
+        <section class="section closing">
+          <div class="section-head">
+            <span class="section-tag">Bottom Line</span>
+            <h2>This model can help structure a regulatory conversation. It cannot, by itself, settle one.</h2>
+          </div>
+          <p>The notebook’s strongest move is the opening correction from total emissions to per-capita emissions. Its second-strongest move is the merged country panel that brings energy, development, transport, and land-use variables into one predictive frame. Its weakest move is the implied jump from predictive success to policy prescription.</p>
+          <p>Read carefully, the right conclusion is narrower and more useful. The model says that cross-country differences in per-capita CO2 are meaningfully associated with a cluster of structural variables, and that some of those variables retain signal even after regularization. That is enough to guide where regulatory analysis should look next. It is not enough to say which policy caused what, or what any one government should do without further evidence.</p>
+        </section>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
