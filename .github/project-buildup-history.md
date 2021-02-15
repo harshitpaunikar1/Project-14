@@ -24,3 +24,7 @@
 
 - Task summary: Spent another hour on this: fixed the README section that was missing the setup step — embarrassing oversight.
 - Deliverable: Solid now, moving on.
+## 2021-02-15 - Day 4: EDA
+
+- Task summary: One more pass: wrapped a repeated block in a helper function since it showed up three times.
+- Deliverable: Minor but worth doing.
