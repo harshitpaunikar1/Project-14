@@ -40,3 +40,7 @@
 
 - Task summary: Noticed something off from this morning — there was a subtle off-by-one error in the index slicing that was silently skewing results. Caught it and fixed it.
 - Deliverable: Nothing dramatic — just keeping things tidy.
+## 2021-02-16 - Day 5: Feature prep
+
+- Task summary: Quick follow-up: ran the whole thing end to end again after a fresh look. Caught a stale import that broke the flow.
+- Deliverable: Minor but worth doing.
