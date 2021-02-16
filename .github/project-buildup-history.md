@@ -44,3 +44,7 @@
 
 - Task summary: Quick follow-up: ran the whole thing end to end again after a fresh look. Caught a stale import that broke the flow.
 - Deliverable: Minor but worth doing.
+## 2021-02-16 - Day 5: Feature prep
+
+- Task summary: Circled back: the output formatting looked messy when printed, so added a cleaner display block.
+- Deliverable: Minor but worth doing.
