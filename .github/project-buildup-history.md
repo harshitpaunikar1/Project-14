@@ -28,3 +28,7 @@
 
 - Task summary: One more pass: wrapped a repeated block in a helper function since it showed up three times.
 - Deliverable: Minor but worth doing.
+## 2021-02-16 - Day 5: Feature prep
+
+- Task summary: This was the middle stretch where the project started feeling real. I kept going and tried to choose the target and prepare the model input features, then cleaned up whatever looked confusing or weak from the earlier days. Once the base made some sense, I could finally move a bit faster and stop second guessing every tiny decision. A lot of this also meant checking if the numbers were making sense and not just trusting the first result that showed up.
+- Deliverable: Ended the day with feature set in hand, plus a few side notes on what still needed fixing later. It was not super polished, just stable enough that I felt okay moving forward.
