@@ -36,3 +36,7 @@
 
 - Task summary: Quick follow-up: went back and reorganized the config section so values are not buried mid-script.
 - Deliverable: Should've caught it earlier but better now than later.
+## 2021-02-16 - Day 5: Feature prep
+
+- Task summary: Noticed something off from this morning — there was a subtle off-by-one error in the index slicing that was silently skewing results. Caught it and fixed it.
+- Deliverable: Nothing dramatic — just keeping things tidy.
