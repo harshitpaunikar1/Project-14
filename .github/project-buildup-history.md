@@ -60,3 +60,7 @@
 
 - Task summary: Came back after lunch and realized pushed a config tweak after noticing the wrong default param was being used.
 - Deliverable: One of those satisfying small wins.
+## 2021-02-17 - Day 6: Baseline model
+
+- Task summary: After stepping away for a bit, came back and found a duplicate function that slipped in during copy-paste. Removed it.
+- Deliverable: Nothing dramatic — just keeping things tidy.
