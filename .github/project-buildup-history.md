@@ -64,3 +64,7 @@
 
 - Task summary: After stepping away for a bit, came back and found a duplicate function that slipped in during copy-paste. Removed it.
 - Deliverable: Nothing dramatic — just keeping things tidy.
+## 2021-02-17 - Day 6: Baseline model
+
+- Task summary: After stepping away for a bit, came back and the test I wrote this morning had a hardcoded path, swapped it for a relative one.
+- Deliverable: Wrapped it up properly this time.
