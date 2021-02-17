@@ -56,3 +56,7 @@
 
 - Task summary: Spent another hour on this: fixed the README section that was missing the setup step — embarrassing oversight.
 - Deliverable: One of those satisfying small wins.
+## 2021-02-17 - Day 6: Baseline model
+
+- Task summary: Came back after lunch and realized pushed a config tweak after noticing the wrong default param was being used.
+- Deliverable: One of those satisfying small wins.
