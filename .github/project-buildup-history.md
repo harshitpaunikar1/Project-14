@@ -68,3 +68,7 @@
 
 - Task summary: After stepping away for a bit, came back and the test I wrote this morning had a hardcoded path, swapped it for a relative one.
 - Deliverable: Wrapped it up properly this time.
+## 2021-02-18 - Day 7: Model improvement
+
+- Task summary: This was the middle stretch where the project started feeling real. I kept going and tried to try a stronger model or tune the main parameters, then cleaned up whatever looked confusing or weak from the earlier days. By now I had enough structure to keep going without staring at the screen too long, which honestly helped a lot. Most of the progress here came from patient cleanup more than anything flashy.
+- Deliverable: Ended the day with improved model in hand, plus a few side notes on what still needed fixing later. There were still a couple of loose parts, but nothing serious enough to block the next step.
