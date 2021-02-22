@@ -88,3 +88,7 @@
 
 - Task summary: Ended up revisiting this in the evening — added inline comments in the dense sections — would have been confusing to revisit without them.
 - Deliverable: Cleaner than this morning's version.
+## 2021-02-22 - Day 9: Storytelling check
+
+- Task summary: Quick follow-up: added one more evaluation metric that felt missing from the earlier comparison.
+- Deliverable: One of those satisfying small wins.
