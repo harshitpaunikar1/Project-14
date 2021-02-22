@@ -80,3 +80,7 @@
 
 - Task summary: Closer to the end, I was mostly tightening things up instead of inventing new scope. The job for the day was to translate the result into plain language for a non-technical reader so the final result looked a bit more complete. Most of the heavy lifting was already done, so this part was more about making the rough edges less obvious. I kept bouncing between the notebook, small observations, and quick plots until the direction felt usable.
 - Deliverable: Ended the day with business takeaway in hand, plus a few side notes on what still needed fixing later. I also left myself a few rough reminders for the next day so I would not have to rediscover the same context again.
+## 2021-02-22 - Day 9: Storytelling check
+
+- Task summary: After stepping away for a bit, came back and went back and reorganized the config section so values are not buried mid-script.
+- Deliverable: Solid now, moving on.
