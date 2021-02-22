@@ -84,3 +84,7 @@
 
 - Task summary: After stepping away for a bit, came back and went back and reorganized the config section so values are not buried mid-script.
 - Deliverable: Solid now, moving on.
+## 2021-02-22 - Day 9: Storytelling check
+
+- Task summary: Ended up revisiting this in the evening — added inline comments in the dense sections — would have been confusing to revisit without them.
+- Deliverable: Cleaner than this morning's version.
