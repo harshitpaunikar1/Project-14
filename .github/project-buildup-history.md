@@ -92,3 +92,7 @@
 
 - Task summary: Quick follow-up: added one more evaluation metric that felt missing from the earlier comparison.
 - Deliverable: One of those satisfying small wins.
+## 2021-02-23 - Day 10: Documentation wrap
+
+- Task summary: Used the last day on CO2 Emissions Prediction to slow down and finish the loose ends. I mainly had to clean the notebook and write a short README and make sure the project told a clean story from start to finish. Toward the end I mostly kept trimming weird bits, fixing wording, and tying the loose parts together. Most of the progress here came from patient cleanup more than anything flashy.
+- Deliverable: Finished with project documentation looking decent enough to call this version done, even if I could still nitpick a few things. There were still a couple of loose parts, but nothing serious enough to block the next step.
