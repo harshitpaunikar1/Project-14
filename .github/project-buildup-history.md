@@ -22,7 +22,7 @@
 - Deliverable: I wrapped up the day with eDA summary mostly in place. It was not perfect, but it was good enough to keep the project moving. There were still a couple of loose parts, but nothing serious enough to block the next step.
 ## 2021-02-15 - Day 4: EDA
 
-- Task summary: Spent another hour on this: fixed the README section that was missing the setup step — embarrassing oversight.
+- Task summary: Spent another hour on this: fixed the README section that was missing the setup step - embarrassing oversight.
 - Deliverable: Solid now, moving on.
 ## 2021-02-15 - Day 4: EDA
 
@@ -38,8 +38,8 @@
 - Deliverable: Should've caught it earlier but better now than later.
 ## 2021-02-16 - Day 5: Feature prep
 
-- Task summary: Noticed something off from this morning — there was a subtle off-by-one error in the index slicing that was silently skewing results. Caught it and fixed it.
-- Deliverable: Nothing dramatic — just keeping things tidy.
+- Task summary: Noticed something off from this morning - there was a subtle off-by-one error in the index slicing that was silently skewing results. Caught it and fixed it.
+- Deliverable: Nothing dramatic - just keeping things tidy.
 ## 2021-02-16 - Day 5: Feature prep
 
 - Task summary: Quick follow-up: ran the whole thing end to end again after a fresh look. Caught a stale import that broke the flow.
@@ -54,7 +54,7 @@
 - Deliverable: Ended the day with baseline results in hand, plus a few side notes on what still needed fixing later. I also left myself a few rough reminders for the next day so I would not have to rediscover the same context again.
 ## 2021-02-17 - Day 6: Baseline model
 
-- Task summary: Spent another hour on this: fixed the README section that was missing the setup step — embarrassing oversight.
+- Task summary: Spent another hour on this: fixed the README section that was missing the setup step - embarrassing oversight.
 - Deliverable: One of those satisfying small wins.
 ## 2021-02-17 - Day 6: Baseline model
 
@@ -63,7 +63,7 @@
 ## 2021-02-17 - Day 6: Baseline model
 
 - Task summary: After stepping away for a bit, came back and found a duplicate function that slipped in during copy-paste. Removed it.
-- Deliverable: Nothing dramatic — just keeping things tidy.
+- Deliverable: Nothing dramatic - just keeping things tidy.
 ## 2021-02-17 - Day 6: Baseline model
 
 - Task summary: After stepping away for a bit, came back and the test I wrote this morning had a hardcoded path, swapped it for a relative one.
@@ -86,7 +86,7 @@
 - Deliverable: Solid now, moving on.
 ## 2021-02-22 - Day 9: Storytelling check
 
-- Task summary: Ended up revisiting this in the evening — added inline comments in the dense sections — would have been confusing to revisit without them.
+- Task summary: Ended up revisiting this in the evening - added inline comments in the dense sections - would have been confusing to revisit without them.
 - Deliverable: Cleaner than this morning's version.
 ## 2021-02-22 - Day 9: Storytelling check
 
